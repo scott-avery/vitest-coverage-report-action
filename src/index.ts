@@ -4,7 +4,6 @@ import { parseJsonFinal, parseJsonSummary } from './parseJsonReports.js';
 import { writeSummaryToPR } from './writeSummaryToPR.js';
 import * as core from '@actions/core';
 import { parseThresholds } from './parseThresholds.js';
-import { generateFileCoverageHtml } from './generateFileCoverageHtml.js';
 
 const run = async () => {
   const jsonSummaryPath = path.resolve(core.getInput('json-summary-path'));
@@ -16,14 +15,10 @@ const run = async () => {
   const thresholds = await parseThresholds(viteConfigPath);
 
   const tableData = generateSummaryTableData(jsonSummary.total, thresholds);
-  const fileTable = generateFileCoverageHtml({
-    jsonSummary, jsonFinal 
-  });
 
   const summary = core.summary
     .addHeading('Coverage Summary')
     .addRaw(tableData)
-    .addDetails('File Coverage', fileTable)
 
   await writeSummaryToPR(summary);
   await summary.write();
